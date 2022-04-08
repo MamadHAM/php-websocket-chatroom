@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+
+    <title>Tuts+ Chat Application</title>
+    <meta name="description" content="Tuts+ Chat Application" />
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<div id="wrapper">
+    <div id="menu">
+        <p class="welcome">Welcome, <input name="usermsg" type="text" id="YourName" value="User1"/><b></b></p>
+<!--        <p class="logout"><a id="exit" href="#">Exit Chat</a></p>-->
+    </div>
+
+    <div id="chatbox"></div>
+
+    <form >
+        <input name="usermsg" type="text" id="usermsg" />
+        <p id="submitmsg" onclick="SendMessage()">Send</p>
+    </form>
+</div>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script type="text/javascript">
+
+    //Time
+    const date = new Date();
+    var seconds = date.getSeconds();
+    var minutes = date.getMinutes();
+    var hour = date.getHours();
+
+    //Message List
+    const list = document.getElementById("chatbox");
+
+    //Websocker Connection
+    var conn = new WebSocket('ws://localhost:8080');
+    conn.onopen = function(e) {
+        console.log("Connection established!");
+    };
+
+    //REcive Message
+    conn.onmessage = function(e) {
+        const Message = JSON.parse(e.data);
+        list.innerHTML += `<div class='msgln'><span class='chat-time'>` + hour + ":" + minutes + ":" + seconds + `</span> <b class='user-name'>` + Message.name + `</b> ` + Message.message + `<br></div></div>`;
+
+        console.log(e.data);
+    };
+
+    //Send Message
+    function SendMessage(){
+        var YourMessage = document.getElementById("usermsg").value.replace(/>|<|"/gi, "");
+        var YourName = document.getElementById("YourName").value.replace(/>|<|"/gi, "");
+        if(YourName == "")
+            YourName = "User1";
+        const Message = `{"name":"` + YourName + `", "message":"` + YourMessage + `"}`;
+        document.getElementById("usermsg").value = "";
+        list.innerHTML += `<div class='msgln'><span class='chat-time'>` + hour + ":" + minutes + ":" + seconds + `</span> <b class='user-name'>You</b> ` + YourMessage + `<br></div></div>`;
+        conn.send(Message);
+    }
+</script>
+</body>
+</html>
