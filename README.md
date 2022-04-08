@@ -7,6 +7,7 @@ composer updaet
 php bin/chat-server.php
 
 After executing the above command, the web socket is ready on port 8080
+
 Open "index.html" to test
 
 ## Change Port
